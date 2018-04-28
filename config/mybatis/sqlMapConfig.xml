@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- <mappers>
+		这里mapper采用扫描的方式通过spring注入实现，这里不再配置mybatis的mapper
+		需要注意，如果通过spring注入方式进行实现mapper，需要实现一定的规则：
+			1、mapper.xml和mapper.java文件必须同名切在同一个目录。
+			2、mapper.xml中的statement名称和mapper.java中的方法名必须相同。
+			3、注意xml中statment的输入输出参数和java文件中入参和返回的相同。
+	</mappers> -->
+	
+	
+	<!-- 配置别名 -->
+	<typeAliases>
+		<!-- 采用批量扫描方式 -->
+		<package name="cw.demo.ssm.po"/>
+	</typeAliases>
+	
+	
+</configuration>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cw.demo.ssm.mapper.UsersMapper">
+
+	<!-- 使用sql片段，一般只针对单表进行sql片段的配置 -->
+	<sql id="query_users_where">
+		<if test="id!=null and id!=''">
+			and id = #{id}
+		</if>
+  		<if test="firstname!=null and firstname!=''">
+  			and firstname = #{firstname}
+  		</if>
+  		<if test="firstname!=null and firstname!=''">
+  			and lastname = #{lastname}
+  		</if>
+	</sql>
+
+
+  <!-- 因为设置了别名，这里直接使用了 TLoginLog 类型名称 。没有使用全路径名-->
+  <resultMap type="user" id="User_Query">
+  	<id column="id" property="id"/>
+  	<result column="firstname" property="firstname"/>
+  	<result column="lastname" property="lastname"/>
+  	<result column="phone" property="phone"/>
+  	<result column="email" property="email"/>
+  </resultMap>
+  
+  <!-- 实现一个自定义的用户信息查询,启用mybatis动态sql拼接 -->
+  <select id="getUsers" parameterType="user" resultMap="User_Query">
+  	SELECT * FROM users
+  	<!-- 使用where自动过滤第一个and -->
+  	<where>
+  		<!-- <if test="firstname!=null and firstname!=''">
+  			and firstname = #{firstname}
+  		</if>
+  		<if test="firstname!=null and firstname!=''">
+  			and lastname = #{lastname}
+  		</if> -->
+  		
+  		<!-- 引用sql片段 -->
+  		<include refid="query_users_where"></include>
+  	</where>
+  </select>
+  
+  <!-- 获取用户总数 -->
+  <select id="getTotalUsers" resultType="int">
+  	SELECT COUNT(*) FROM users
+  </select>
+  
+  <!-- 分页查询用户数 -->
+  <select id="getPageUsers" parameterType="PageUsersInfo" resultMap="User_Query">
+  	SELECT * FROM users LIMIT #{index},#{length}
+  </select>
+  
+  <!-- 插入一条记录 -->
+  <insert id="insertUser" parameterType="User">
+  	<!-- 针对自增主键，在插入数据之后获取其主键 -->
+  	<selectKey keyProperty="id" order="AFTER" resultType="int">
+  		SELECT LAST_INSERT_ID()
+  	</selectKey>
+  	
+  	<!-- 针对非自增主键的返回，使用uuid()方法 -->
+  	<!-- 
+  		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+  			SELECT UUID();	//注意，这里查出来的id属性其实是赋值给了 Users的id属性
+  		</selectKey>
+  		INSERT INTO users(id,firstname,lastname,phone,email) VALUE (#{id},#{firstname},#{lastname},#{phone},#{email}) 
+  	-->
+  	
+  	
+  	INSERT INTO users(id,firstname,lastname,phone,email) VALUE (#{id},#{firstname},#{lastname},#{phone},#{email})
+  </insert>
+  
+  <!-- 更新一条用户记录 -->
+  <update id="updateUser" parameterType="user">
+  		UPDATE users SET firstname = #{firstname} , lastname = #{lastname},phone = #{phone},email = #{email} WHERE id = #{id}
+  </update>
+  
+  <!-- 删除一条用户记录 -->
+  <delete id="removeUser" parameterType="int">
+  		DELETE FROM users WHERE id = #{id}
+  </delete>
+</mapper>
